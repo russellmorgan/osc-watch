@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OSC Directory Monitor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>OSC Watcher</title>
+  <script src="./static/tailwind.css"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
   <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-    <h1 class="text-2xl font-bold mb-4">OSC Directory Monitor</h1>
+    <div class="flex gap-2 pb-4">
+      <img src="./static/osc-thumb.jpg" alt="" width="64" height="64" class="rounded-full">
+      <h1 class="text-2xl font-bold mb-4">OSC Python Watcher</h1>
+    </div>
 
     <div class="mb-4">
       <label class="block text-sm font-semibold">Directory to Watch</label>
@@ -95,6 +98,21 @@
 
     document.getElementById('clearLogBtn').addEventListener('click', function() {
       document.getElementById('log').innerText = '';
+    });
+
+    // SSE for real-time log updates
+    const evtSource = new EventSource('/stream');
+    evtSource.onmessage = function(event) {
+      const logDiv = document.getElementById('log');
+      logDiv.innerText += event.data + '\n';
+      logDiv.scrollTop = logDiv.scrollHeight;
+    };
+
+    // Optional: clear log in browser when Clear Log button is clicked
+    document.getElementById('clearLogBtn').addEventListener('click', function() {
+      fetch('/clear_log', { method: 'POST' }).then(() => {
+        document.getElementById('log').innerText = '';
+      });
     });
   </script>
 </body>

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 from pythonosc.udp_client import SimpleUDPClient
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -27,7 +27,7 @@ class NewFileHandler(FileSystemEventHandler):
             print(f"Sending OSC (created): {osc_message}")  # Debug print
             client.send_message("/newfile", osc_message)
             # Add test message log format for consistency with send_test
-            log_messages.append(f"Test message sent: /newfile {osc_message}")
+            log_messages.append(f"Message sent: /newfile {osc_message}")
 
     def on_moved(self, event):
         print(f"Moved event detected: {event}")  # Debug print
@@ -39,7 +39,7 @@ class NewFileHandler(FileSystemEventHandler):
             log_messages.append(log_entry)
             print(f"Sending OSC (moved): {osc_message}")  # Debug print
             client.send_message("/newfile", osc_message)
-            log_messages.append(f"Test message sent: /newfile {osc_message}")
+            log_messages.append(f"Message sent: /newfile {osc_message}")
 
 @app.route('/')
 def index():
@@ -100,6 +100,19 @@ def get_log():
 def clear_log():
     log_messages.clear()
     return jsonify({"status": "Log cleared."})
+
+@app.route('/stream')
+def stream():
+    def event_stream():
+        last_len = 0
+        while True:
+            if len(log_messages) > last_len:
+                # Send only new log entries
+                for entry in log_messages[last_len:]:
+                    yield f"data: {entry}\n\n"
+                last_len = len(log_messages)
+            time.sleep(1)
+    return Response(event_stream(), mimetype="text/event-stream")
 
 if __name__ == '__main__':
     app.run(debug=True)
