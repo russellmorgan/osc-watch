@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSC Directory Monitor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+    <h1 class="text-2xl font-bold mb-4">OSC Directory Monitor</h1>
+
+    <div class="mb-4">
+      <label class="block text-sm font-semibold">Directory to Watch</label>
+      <div class="flex gap-2">
+        <input type="text" id="directory" class="w-full p-2 mt-1 border rounded-md" placeholder="/path/to/directory" />
+        <input type="file" id="dirPicker" webkitdirectory directory multiple style="display:none" />
+        <button type="button" id="chooseDirBtn" class="p-2 mt-1 bg-gray-200 rounded-md hover:bg-gray-300">Choose…</button>
+      </div>
+    </div>
+
+    <div class="flex gap-4 mb-4">
+      <div class="flex-1">
+        <label class="block text-sm font-semibold">OSC IP Address</label>
+        <input type="text" id="ip" class="w-full p-2 mt-1 border rounded-md" placeholder="127.0.0.1" />
+      </div>
+      <div class="flex-1">
+        <label class="block text-sm font-semibold">OSC Port</label>
+        <input type="number" id="port" class="w-full p-2 mt-1 border rounded-md" placeholder="8000" />
+      </div>
+    </div>
+
+    <div class="flex gap-4 mb-4">
+      <button id="startStopBtn" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Start Monitoring</button>
+      <button id="testBtn" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Send Test Message</button>
+      <button id="clearLogBtn" class="bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500">Clear Log</button>
+    </div>
+
+    <div class="mt-4">
+      <h2 class="text-lg font-semibold">Log</h2>
+      <div id="log" class="mt-2 p-2 h-48 bg-gray-100 rounded-md overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('startStopBtn').addEventListener('click', async function() {
+      const isStarting = this.textContent.includes('Start');
+      const directory = document.getElementById('directory').value;
+      const ip = document.getElementById('ip').value;
+      const port = document.getElementById('port').value;
+
+      if (isStarting) {
+        const response = await fetch('/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ directory, ip, port })
+        });
+        const data = await response.json();
+        document.getElementById('log').innerText += "\n" + data.status;
+        this.textContent = 'Stop Monitoring';
+      } else {
+        const response = await fetch('/stop', { method: 'POST' });
+        const data = await response.json();
+        document.getElementById('log').innerText += "\n" + data.status;
+        this.textContent = 'Start Monitoring';
+      }
+    });
+
+    document.getElementById('testBtn').addEventListener('click', async function() {
+      const ip = document.getElementById('ip').value;
+      const port = document.getElementById('port').value;
+
+      const response = await fetch('/send_test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip, port })
+      });
+
+      const data = await response.json();
+      document.getElementById('log').innerText += "\n" + data.status;
+    });
+
+    document.getElementById('chooseDirBtn').addEventListener('click', function() {
+      document.getElementById('dirPicker').click();
+    });
+
+    document.getElementById('dirPicker').addEventListener('change', function(event) {
+      if (event.target.files.length > 0) {
+        // Get the directory path from the first file
+        const fullPath = event.target.files[0].webkitRelativePath || event.target.files[0].mozFullPath || '';
+        const dir = fullPath.split('/')[0];
+        document.getElementById('directory').value = dir;
+      }
+    });
+
+    document.getElementById('clearLogBtn').addEventListener('click', function() {
+      document.getElementById('log').innerText = '';
+    });
+  </script>
+</body>
+</html>
