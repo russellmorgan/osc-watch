@@ -6,9 +6,9 @@
   <title>OSC Watcher</title>
   <script src="./static/tailwind.css"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-300 min-h-screen flex items-center justify-center">
   <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-    <div class="flex gap-2 pb-4">
+    <div class="flex gap-4 pb-4 items-center w-full">
       <img src="./static/osc-thumb.jpg" alt="" width="64" height="64" class="rounded-full">
       <h1 class="text-2xl font-bold mb-4">OSC Python Watcher</h1>
     </div>
@@ -17,31 +17,29 @@
       <label class="block text-sm font-semibold">Directory to Watch</label>
       <div class="flex gap-2">
         <input type="text" id="directory" class="w-full p-2 mt-1 border rounded-md" placeholder="/path/to/directory" />
-        <input type="file" id="dirPicker" webkitdirectory directory multiple style="display:none" />
-        <button type="button" id="chooseDirBtn" class="p-2 mt-1 bg-gray-200 rounded-md hover:bg-gray-300">Choose…</button>
       </div>
     </div>
 
     <div class="flex gap-4 mb-4">
       <div class="flex-1">
         <label class="block text-sm font-semibold">OSC IP Address</label>
-        <input type="text" id="ip" class="w-full p-2 mt-1 border rounded-md" placeholder="127.0.0.1" />
+        <input type="text" id="ip" class="w-full p-2 mt-1 border rounded-md" placeholder="127.0.0.1" value="127.0.0.1" />
       </div>
       <div class="flex-1">
         <label class="block text-sm font-semibold">OSC Port</label>
-        <input type="number" id="port" class="w-full p-2 mt-1 border rounded-md" placeholder="8000" />
+        <input type="number" id="port" class="w-full p-2 mt-1 border rounded-md" placeholder="8000" value="8000" />
       </div>
     </div>
 
     <div class="flex gap-4 mb-4">
       <button id="startStopBtn" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Start Monitoring</button>
       <button id="testBtn" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Send Test Message</button>
-      <button id="clearLogBtn" class="bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500">Clear Log</button>
+      <button id="clearLogBtn" class="bg-red-400 text-white py-2 px-4 rounded-md hover:bg-red-500">Clear Log</button>
     </div>
 
     <div class="mt-4">
       <h2 class="text-lg font-semibold">Log</h2>
-      <div id="log" class="mt-2 p-2 h-48 bg-gray-100 rounded-md overflow-y-auto"></div>
+      <div id="log" class="mt-2 p-4 h-48 bg-gray-100 rounded-md overflow-y-auto text-sm"></div>
     </div>
   </div>
 
