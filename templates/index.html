@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OSC Watcher</title>
-  <script src="./static/tailwind.css"></script>
+  <script src="/static/tailwind.css"></script>
 </head>
 <body class="bg-gray-300 min-h-screen flex items-center justify-center">
   <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
@@ -81,18 +81,7 @@
       document.getElementById('log').innerText += "\n" + data.status;
     });
 
-    document.getElementById('chooseDirBtn').addEventListener('click', function() {
-      document.getElementById('dirPicker').click();
-    });
-
-    document.getElementById('dirPicker').addEventListener('change', function(event) {
-      if (event.target.files.length > 0) {
-        // Get the directory path from the first file
-        const fullPath = event.target.files[0].webkitRelativePath || event.target.files[0].mozFullPath || '';
-        const dir = fullPath.split('/')[0];
-        document.getElementById('directory').value = dir;
-      }
-    });
+    
 
     document.getElementById('clearLogBtn').addEventListener('click', function() {
       document.getElementById('log').innerText = '';
